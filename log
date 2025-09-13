@@ -8,3 +8,9 @@ sá., 13 de sep. de 2025  0:06:27:
  tests:  1|5
 total_score: 10/70
 b7b7f94
+sá., 13 de sep. de 2025  0:10:00: 
+ hashmap.c | 86 +++++++++++++++++++++++++++++++++++++--------------------------
+ 1 file changed, 50 insertions(+), 36 deletions(-)
+ tests:  5|4
+total_score: 30/70
+6337ac8
