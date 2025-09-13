@@ -130,12 +130,54 @@ void eraseMap(HashMap * map,  char * key) {
 
 void enlarge(HashMap * map) {
     enlarge_called = 1; //no borrar (testing purposes)
+    if (!map) return;
+
+    Pair **old_buckets = map->buckets;
+    long old_capacity  = map->capacity;
+
+    map->capacity = (old_capacity > 0) ? old_capacity * 2 : 2;
+    map->buckets  = (Pair**) calloc((size_t)map->capacity, sizeof(Pair*));
+    map->size     = 0;
+    map->current  = -1;
+
+    for (long i = 0; i < old_capacity; i++) {
+        Pair *p = old_buckets[i];
+        if (p != NULL && p->key != NULL) {
+            insertMap(map, p->key, p->value);
+        }
+    }
+
+    for (long i = 0; i < old_capacity; i++) {
+        if (old_buckets[i] != NULL) free(old_buckets[i]);
+    }
+    free(old_buckets);
 }
 
 Pair * firstMap(HashMap * map) {
+    if (!map || map->capacity <= 0) return NULL;
+
+    for (long i = 0; i < map->capacity; i++) {
+        Pair *p = map->buckets[i];
+        if (p != NULL && p->key != NULL) {
+            map->current = i;
+            return p;
+        }
+    }
+    map->current = -1;
     return NULL;
 }
 
 Pair * nextMap(HashMap * map) {
+    if (!map || map->capacity <= 0) return NULL;
+    if (map->current < 0) return NULL;
+
+    for (long i = map->current + 1; i < map->capacity; i++) {
+        Pair *p = map->buckets[i];
+        if (p != NULL && p->key != NULL) {
+            map->current = i;
+            return p;
+        }
+    }
+    map->current = -1;
     return NULL;
 }
