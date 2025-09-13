@@ -5,15 +5,14 @@
 #include <ctype.h>
 #include "hashmap.h"
 
-
 typedef struct HashMap HashMap;
 int enlarge_called=0;
 
 struct HashMap {
     Pair ** buckets;
-    long size; //cantidad de datos/pairs en la tabla
-    long capacity; //capacidad de la tabla
-    long current; //indice del ultimo dato accedido
+    long size;     // cantidad de datos/pairs en la tabla
+    long capacity; // capacidad de la tabla
+    long current;  // indice del ultimo dato accedido
 };
 
 Pair * createPair( char * key,  void * value) {
@@ -25,7 +24,7 @@ Pair * createPair( char * key,  void * value) {
 
 long hash( char * key, long capacity) {
     unsigned long hash = 0;
-     char * ptr;
+    char * ptr;
     for (ptr = key; *ptr != '\0'; ptr++) {
         hash += hash*32 + tolower(*ptr);
     }
@@ -91,29 +90,52 @@ void insertMap(HashMap * map, char * key, void * value) {
     map->current = pos;
 }
 
-void enlarge(HashMap * map) {
-    enlarge_called = 1; //no borrar (testing purposes)
+Pair * searchMap(HashMap * map,  char * key) {
+    if (!map || !key || map->capacity <= 0) return NULL;
 
+    long idx = hash(key, map->capacity);
+    long start = idx;
 
-}
-
-void eraseMap(HashMap * map,  char * key) {    
-
-
-}
-
-Pair * searchMap(HashMap * map,  char * key) {   
-
+    while (map->buckets[idx] != NULL) {
+        Pair *p = map->buckets[idx];
+        if (p->key != NULL && is_equal(p->key, key)) {
+            map->current = idx;
+            return p;
+        }
+        idx = (idx + 1) % map->capacity;
+        if (idx == start) break;
+    }
 
     return NULL;
 }
 
-Pair * firstMap(HashMap * map) {
+void eraseMap(HashMap * map,  char * key) {
+    if (!map || !key || map->capacity <= 0) return;
 
+    long idx = hash(key, map->capacity);
+    long start = idx;
+
+    while (map->buckets[idx] != NULL) {
+        Pair *p = map->buckets[idx];
+        if (p->key != NULL && is_equal(p->key, key)) {
+            p->key = NULL;
+            map->size -= 1;
+            map->current = idx;
+            return;
+        }
+        idx = (idx + 1) % map->capacity;
+        if (idx == start) break;
+    }
+}
+
+void enlarge(HashMap * map) {
+    enlarge_called = 1; //no borrar (testing purposes)
+}
+
+Pair * firstMap(HashMap * map) {
     return NULL;
 }
 
 Pair * nextMap(HashMap * map) {
-
     return NULL;
 }
